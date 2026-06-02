@@ -1,6 +1,6 @@
 # threadlocked
 
-a dead simple [webring](https://en.wikipedia.org/wiki/Webring) api server for threadlocked.
+a dead simple [webring](https://en.wikipedia.org/wiki/Webring) api server for threadlocked
 
 ## how to join the webring?
 
@@ -13,7 +13,7 @@ add your entry to [`webring.json`](./webring.json) and open a pr:
 }
 ```
 
-the position of your entry in the array determines where you sit in the ring order. append at the end or insert between existing members - up to you! 
+the position of your entry in the array determines where you sit in the ring order. append at the end or insert between existing members - up to you! once your entry gets added to the webring, you can use `https://<name>.seggs.lol` as a redirect to your site.
 
 ## how to add prev / next / random to your site?
 
