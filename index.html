@@ -331,6 +331,14 @@
             return { name: el.dataset.name, el: el };
           });
 
+        // shuffle cards on every visit
+        var grid = document.getElementById("grid");
+        for (var i = items.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = items[i]; items[i] = items[j]; items[j] = tmp;
+        }
+        items.forEach(function (it) { grid.appendChild(it.el); });
+
         var fuse =
           typeof Fuse !== "undefined"
             ? new Fuse(items, {
