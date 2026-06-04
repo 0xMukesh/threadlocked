@@ -48,32 +48,36 @@ func host(raw string) string {
 	return strings.TrimPrefix(u.Host, "www.")
 }
 
-// renderIndex injects the member cards into the embedded page once, at startup,
-// so each request just writes static bytes (no per-request templating).
-func renderIndex(webring []WebringEntry) []byte {
-	var cards strings.Builder
-	for _, e := range webring {
-		name := html.EscapeString(e.Name)
-		cards.WriteString(`<a class="card" href="`)
-		cards.WriteString(html.EscapeString(e.Url))
-		cards.WriteString(`" rel="noopener" data-name="`)
-		cards.WriteString(name)
-		cards.WriteString(`"><span class="avatar">`)
-		cards.WriteString(html.EscapeString(initial(e.Name)))
-		if e.Gh != "" {
-			cards.WriteString(`<img src="https://avatars.githubusercontent.com/`)
-			cards.WriteString(html.EscapeString(e.Gh))
-			cards.WriteString(`?size=96" alt="" loading="lazy" onerror="this.setAttribute('data-failed','')" />`)
-		}
-		cards.WriteString(`</span><span class="meta"><span class="name">`)
-		cards.WriteString(name)
-		cards.WriteString(`</span><span class="host">`)
-		cards.WriteString(html.EscapeString(host(e.Url)))
-		cards.WriteString(`</span></span><span class="arrow">&rarr;</span></a>`)
-	}
+var founderNames = map[string]bool{"datavorous": true, "nisarga": true}
 
-	out := strings.Replace(string(indexHTML), "<!--MEMBERS-->", cards.String(), 1)
-	out = strings.Replace(out, "<!--COUNT-->", fmt.Sprintf("%d members", len(webring)), 1)
+func buildCards(entries []WebringEntry) string {
+	var b strings.Builder
+	for _, e := range entries {
+		name := html.EscapeString(e.Name)
+		b.WriteString(`<a class="card" href="`)
+		b.WriteString(html.EscapeString(e.Url))
+		b.WriteString(`" rel="noopener" data-name="`)
+		b.WriteString(name)
+		b.WriteString(`"><span class="avatar">`)
+		b.WriteString(html.EscapeString(initial(e.Name)))
+		if e.Gh != "" {
+			b.WriteString(`<img src="https://avatars.githubusercontent.com/`)
+			b.WriteString(html.EscapeString(e.Gh))
+			b.WriteString(`?size=96" alt="" loading="lazy" onerror="this.setAttribute('data-failed','')" />`)
+		}
+		b.WriteString(`</span><span class="meta"><span class="name">`)
+		b.WriteString(name)
+		b.WriteString(`</span><span class="host">`)
+		b.WriteString(html.EscapeString(host(e.Url)))
+		b.WriteString(`</span></span><span class="arrow">&rarr;</span></a>`)
+	}
+	return b.String()
+}
+
+func renderIndex(founders, members []WebringEntry) []byte {
+	out := strings.Replace(string(indexHTML), "<!--FOUNDERS-->", buildCards(founders), 1)
+	out = strings.Replace(out, "<!--MEMBERS-->", buildCards(members), 1)
+	out = strings.Replace(out, "<!--COUNT-->", fmt.Sprintf("%d members", len(founders)+len(members)), 1)
 	return []byte(out)
 }
 
@@ -84,7 +88,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	page := renderIndex(webring)
+	var founders, members []WebringEntry
+	for _, e := range webring {
+		if founderNames[e.Name] {
+			founders = append(founders, e)
+		} else {
+			members = append(members, e)
+		}
+	}
+
+	page := renderIndex(founders, members)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		reqHost := r.Host

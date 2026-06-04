@@ -143,6 +143,19 @@
 
       .empty { color: var(--muted); font-size: 0.9rem; }
 
+      .section-label {
+        margin: 0 0 0.75rem;
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .founders-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--overlay);
+      }
+
       .grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -271,6 +284,11 @@
         </div>
       </header>
 
+      <div class="founders-section">
+        <p class="section-label">founders</p>
+        <div class="grid" id="founders-grid"><!--FOUNDERS--></div>
+      </div>
+
       <div class="controls">
         <input
           id="search"
@@ -282,6 +300,7 @@
         />
       </div>
 
+      <p class="section-label">members</p>
       <div class="grid" id="grid"><!--MEMBERS--></div>
 
       <p id="empty" class="empty" hidden>no members match.</p>
@@ -325,14 +344,14 @@
         var search = document.getElementById("search");
         var empty = document.getElementById("empty");
 
+        var grid = document.getElementById("grid");
         var items = [].slice
-          .call(document.querySelectorAll(".card"))
+          .call(grid.querySelectorAll(".card"))
           .map(function (el) {
             return { name: el.dataset.name, el: el };
           });
 
-        // shuffle cards on every visit
-        var grid = document.getElementById("grid");
+        // shuffle members on every visit
         for (var i = items.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1));
           var tmp = items[i]; items[i] = items[j]; items[j] = tmp;
