@@ -29,7 +29,7 @@ var webringRaw []byte
 //go:embed index.html
 var indexHTML []byte
 
-var hostsToIgnore = []string{"ring.seggs.lol", "seggs.lol", "www.seggs.lol"}
+var hostsToIgnore = []string{"ring.seggs.lol", "seggs.lol", "www.seggs.lol", "links.seggs.lol"}
 
 // initial returns the uppercased first character of s (for the letter avatar).
 func initial(s string) string {
